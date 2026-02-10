@@ -1,15 +1,14 @@
 [workspace]
 members = [
-    "crates/backend/models",
-    "crates/backend/auth",
-    "crates/backend/chat",
-    "crates/backend/files",
-    "crates/backend/voice",
-    "crates/backend/guilds",
-    "crates/backend/server",
+    "crates/models",
+    "crates/auth",
+    "crates/chat",
+    "crates/files",
+    "crates/voice",
+    "crates/guilds",
+    "crates/server",
     
-    "crates/wasm",
-    
+    "frontend/wasm",
     "frontend/src-tauri",
 ]
 resolver = "2"
@@ -21,9 +20,9 @@ edition = "2024"
 license = "MIT"
 
 [workspace.dependencies]
-blazing-models = { path = "crates/backend/models" }
-blazing-auth = { path = "crates/backend/auth" }
-blazing-chat = { path = "crates/backend/chat" }
-blazing-files = { path = "crates/backend/files" }
-blazing-voice = { path = "crates/backend/voice" }
-blazing-guilds = { path = "crates/backend/guilds" }
+blazing-models = { path = "crates/models" }
+blazing-auth = { path = "crates/auth" }
+blazing-chat = { path = "crates/chat" }
+blazing-files = { path = "crates/files" }
+blazing-voice = { path = "crates/voice" }
+blazing-guilds = { path = "crates/guilds" }
