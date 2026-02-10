@@ -5,3 +5,11 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+serde = { workspace = true }
+uuid = { workspace = true }
+sqlx = { workspace = true }
+bcrypt = { workspace = true }
+jsonwebtoken = { workspace = true }
+chrono = { workspace = true }
+blazing-models = { workspace = true }
+axum = { workspace = true }
