@@ -1,0 +1,7 @@
+[package]
+name = "blazing-chat"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
