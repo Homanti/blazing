@@ -7,14 +7,14 @@ use uuid::Uuid;
 use blazing_models::{RegisterRequest, AuthResponse, AppError, User, LoginRequest};
 
 pub struct AuthService {
-    db_pool: PgPool,
-    jwt_secret: String,
+    pub db_pool: PgPool,
+    pub jwt_secret: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String,
-    exp: i64,
+pub struct Claims {
+    pub sub: String,
+    pub exp: i64,
 }
 
 impl AuthService {

@@ -1,8 +1,7 @@
 use std::env;
 use std::error::Error;
 use std::sync::Arc;
-use axum::Router;
-use axum::routing::get;
+use axum::{Router, routing::get};
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use blazing_auth::{create_auth_routes, AuthService};
@@ -32,6 +31,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("Server running on http://localhost:3000");
 
     axum::serve(listener, app).await?;
+
+    db_pool.close().await;
 
     Ok(())
 }
