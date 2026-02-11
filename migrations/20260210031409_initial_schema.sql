@@ -7,8 +7,8 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     avatar_url TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
 -- Guilds (servers)
@@ -36,8 +36,10 @@ CREATE TABLE messages (
     channel_id UUID NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
     author_id UUID NOT NULL REFERENCES users(id),
     content TEXT NOT NULL,
-    attachments JSONB DEFAULT '[]'::jsonb,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    message_type VARCHAR(50) DEFAULT 'default' NOT NULL,
+    attachments JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
 -- Indexes for performance

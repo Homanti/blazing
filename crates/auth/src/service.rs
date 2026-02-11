@@ -70,15 +70,9 @@ impl AuthService {
             r#"
                 INSERT INTO users (username, email, password_hash)
                 VALUES ($1, $2, $3)
-                RETURNING
-                    id as "id!",
-                    username as "username!",
-                    email as "email!",
-                    password_hash as "password_hash!",
-                    avatar_url,
-                    created_at as "created_at!",
-                    updated_at as "updated_at!"
-            "#, request.username, request.email, password_hash)
+                RETURNING *
+            "#, request.username, request.email, password_hash
+        )
             .fetch_one(&self.db_pool)
             .await
             .map_err(|e| AppError::Database(format!("Failed to create user: {}", e)))?;
@@ -93,14 +87,9 @@ impl AuthService {
 
     pub async fn login(&self, request: LoginRequest) -> Result<AuthResponse, AppError> {
         let user = sqlx::query_as!(User, r#"
-            SELECT id as "id!",
-                   username as "username!",
-                   email as "email!",
-                   password_hash as "password_hash!",
-                   avatar_url,
-                   created_at as "created_at!",
-                   updated_at as "updated_at!"
-            FROM users WHERE email=$1"#, request.email)
+            SELECT id, username, email, password_hash, avatar_url, created_at, updated_at
+            FROM users WHERE email=$1"#, request.email
+        )
             .fetch_optional(&self.db_pool)
             .await
             .map_err(|e| AppError::Database(format!("Error during login: {}", e.to_string())))?;

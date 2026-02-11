@@ -10,3 +10,4 @@ sqlx = { workspace = true }
 blazing-auth = { workspace = true }
 tokio = { workspace = true }
 dotenvy = { workspace = true }
+blazing-chat = { workspace = true }

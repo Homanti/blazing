@@ -5,6 +5,7 @@ use axum::{Router, routing::get};
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use blazing_auth::{create_auth_routes, AuthService};
+use blazing_chat::{create_message_routes, MessageService};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -23,9 +24,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret));
 
+    let message_service = Arc::new(MessageService::new(db_pool.clone()));
+
     let app = Router::new()
         .route("/", get(root))
-        .nest("/auth", create_auth_routes(auth_service));
+        .nest("/auth", create_auth_routes(auth_service.clone()))
+        .nest("/message", create_message_routes(message_service, auth_service.clone()));
 
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     println!("Server running on http://localhost:3000");
