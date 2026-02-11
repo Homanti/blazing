@@ -12,19 +12,6 @@ impl MessageService {
     }
 
     pub async fn create_message(&self, request: SendMessageRequest, author_id: Uuid) -> Result<Message, AppError> {
-        let attachments = request.attachments.and_then(|a| {
-            if a.is_empty() {
-                None
-            } else {
-                Some(a)
-            }
-        });
-
-        let attachments_json = attachments
-            .map(|a| serde_json::to_value(a))
-            .transpose()
-            .map_err(|e| AppError::Internal(format!("Failed to serialize attachments: {}", e)))?;
-
         let message_type = request.message_type.unwrap_or(MessageType::Default);
 
         let message = sqlx::query_as!(Message,
@@ -42,7 +29,7 @@ impl MessageService {
                 updated_at
         "#, request.channel_id, author_id, request.content,
             message_type as MessageType,
-            attachments_json
+            request.attachments.filter(|json| !json.is_empty()) as Option<Json<Vec<Attachment>>>
     )
             .fetch_one(&self.db_pool)
             .await
