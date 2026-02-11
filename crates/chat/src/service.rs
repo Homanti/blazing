@@ -35,7 +35,7 @@ impl MessageService {
             .await
             .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
 
-        println!("Author: {}, Content: {}", message.author_id, message.content);
+        tracing::info!("Author: {}, Content: {}", message.author_id, message.content);
 
         Ok(message)
     }

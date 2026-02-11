@@ -8,11 +8,12 @@ pub fn create_message_routes(
     message_service: Arc<MessageService>,
     auth_service: Arc<AuthService>
 ) -> Router {
+    let auth_layer = middleware::from_fn_with_state(
+        auth_service.clone(),
+        auth_middleware
+    );
+    
     Router::new()
-        .route("/send", post(send_message_handler))
-        .route_layer(middleware::from_fn_with_state(
-            auth_service.clone(),
-            auth_middleware
-        ))
+        .route("/send", post(send_message_handler).layer(auth_layer))
         .with_state(message_service)
 }
