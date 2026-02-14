@@ -35,10 +35,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let message_service = Arc::new(MessageService::new(db_pool.clone()));
 
+    let api_router = Router::new()
+        .nest("/auth", create_auth_routes(auth_service.clone()))
+        .nest("/message", create_message_routes(message_service, auth_service.clone()));
+
     let app = Router::new()
         .route("/", get(root))
-        .nest("/auth", create_auth_routes(auth_service.clone()))
-        .nest("/message", create_message_routes(message_service, auth_service.clone()))
+        .nest("/api/v1", api_router)
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
