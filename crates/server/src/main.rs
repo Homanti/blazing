@@ -4,11 +4,12 @@ use std::sync::Arc;
 use axum::{Router, routing::get};
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
+use tokio::runtime::Handle;
 use tokio::signal;
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use blazing_auth::{create_auth_routes, AuthService};
-use blazing_chat::{create_message_routes, MessageService};
+use blazing_chat::{create_messages_routes, MessagesService};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -18,6 +19,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .with_target(false)
         .with_level(true)
         .compact()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
     let database_url = env::var("DATABASE_URL")?;
@@ -33,12 +35,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret));
 
-    let message_service = Arc::new(MessageService::new(db_pool.clone()));
+    let messages_service = Arc::new(MessagesService::new(db_pool.clone()));
+
+    let api_routes = Router::new()
+        .nest("/auth", create_auth_routes(auth_service.clone()))
+        .nest("/messages", create_messages_routes(messages_service, auth_service.clone()));
 
     let app = Router::new()
         .route("/", get(root))
-        .nest("/auth", create_auth_routes(auth_service.clone()))
-        .nest("/message", create_message_routes(message_service, auth_service.clone()))
+        .nest("/api/v1", api_routes)
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
@@ -46,6 +51,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     tracing::info!("Server running on http://localhost:3000");
+
+    let metrics = Handle::current().metrics();
+    let workers = metrics.num_workers();
+    tracing::info!("Tokio runtime using {} worker threads", workers);
 
     axum::serve(listener, app).with_graceful_shutdown(shutdown_signal()).await?;
 

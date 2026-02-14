@@ -11,6 +11,6 @@ blazing-auth = { workspace = true }
 tokio = { workspace = true }
 dotenvy = { workspace = true }
 blazing-chat = { workspace = true }
-tracing-subscriber = "0.3.22"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 tracing = { workspace = true }
 tower-http = { version = "0.6.8", features = ["trace"] }

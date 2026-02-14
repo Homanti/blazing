@@ -44,7 +44,7 @@ tracing = "0.1.44"
 
 [profile.dev]
 opt-level = 0
-debug = 2
+debug = 1
 incremental = true
 codegen-units = 256
 

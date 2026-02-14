@@ -2,11 +2,11 @@ use sqlx::PgPool;
 use blazing_models::{AppError, Attachment, GetMessagesRequest, Message, MessageType, SendMessageRequest};
 use sqlx::types::{Json, Uuid};
 
-pub struct MessageService {
+pub struct MessagesService {
     db_pool: PgPool,
 }
 
-impl MessageService {
+impl MessagesService {
     pub fn new(db_pool: PgPool) -> Self {
         Self { db_pool }
     }
