@@ -111,7 +111,7 @@ impl MessageHandler for ChatMessageHandler {
             .map_err(|e| format!("Database error: {}", e))?;
 
         let channel_ids: Vec<Uuid> = channels.into_iter().map(|row| row.id).collect();
-        tracing::info!("User {} subscribed to channels: {:?}", user_id, channel_ids);  // Добавь лог
+        tracing::info!("User {} subscribed to channels: {:?}", user_id, channel_ids);
         Ok(channel_ids)
     }
 

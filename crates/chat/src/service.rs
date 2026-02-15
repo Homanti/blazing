@@ -2,6 +2,7 @@ use std::sync::Arc;
 use sqlx::PgPool;
 use blazing_models::{AppError, Attachment, GetMessagesRequest, Message, MessageType, SendMessageRequest};
 use sqlx::types::{Json, Uuid};
+use blazing_auth::CurrentUser;
 use blazing_ws::Broadcaster;
 use crate::WsMessage;
 
@@ -59,7 +60,11 @@ impl MessagesService {
         Ok(message)
     }
 
-    pub async fn get_messages(&self, request: GetMessagesRequest) -> Result<Vec<Message>, AppError> {
+    pub async fn get_messages(&self, request: GetMessagesRequest, current_user: CurrentUser) -> Result<Vec<Message>, AppError> {
+        if !self.user_has_channel_access(current_user.user_id, request.channel_id).await? {
+            return Err(AppError::Forbidden("User is not a member of this guild".to_string()));
+        }
+
         let messages = sqlx::query_as!(Message,
             r#"
                 SELECT

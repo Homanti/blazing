@@ -7,13 +7,14 @@ use blazing_models::{AppError, GetMessagesRequest};
 use crate::MessagesService;
 
 pub async fn get_messages_handler(
-    Extension(_current_user): Extension<CurrentUser>,
+    Extension(current_user): Extension<CurrentUser>,
     State(messages_service): State<Arc<MessagesService>>,
     Json(request): Json<GetMessagesRequest>
 ) -> Result<impl IntoResponse, AppError> {
     let messages = messages_service
-        .get_messages(request)
+        .get_messages(request, current_user)
         .await
         .map_err(|e| AppError::Internal(format!("Error fetching messages: {}", e)))?;
+
     Ok(Json(messages))
 }
