@@ -2,6 +2,7 @@
 /target/
 /crates/*/target/
 .sqlx
+.gitignore
 
 # Frontend
 /frontend/node_modules/
