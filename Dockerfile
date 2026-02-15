@@ -2,6 +2,10 @@ FROM rust:1.93.1 as builder
 
 WORKDIR /app
 
+RUN cargo add sqlx-cli
+
+RUN cargo cargo sqlx prepare --workspace
+
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 
