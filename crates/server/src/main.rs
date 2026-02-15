@@ -49,7 +49,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .nest("/chat", create_chat_routes(
             messages_service,
             auth_service.clone(),
-            jwt_secret,
             broadcaster,
         ));
 

@@ -8,7 +8,6 @@ use uuid::Uuid;
 pub fn create_chat_routes(
     messages_service: Arc<MessagesService>,
     auth_service: Arc<AuthService>,
-    jwt_secret: String,
     broadcaster: Arc<Broadcaster<Uuid, WsMessage>>,
 ) -> Router {
     let rest_routes = Router::new()
@@ -19,7 +18,7 @@ pub fn create_chat_routes(
         ))
         .with_state(messages_service.clone());
 
-    let ws_handler = ChatMessageHandler::new(messages_service, jwt_secret);
+    let ws_handler = ChatMessageHandler::new(messages_service, auth_service.jwt_secret.clone());
     let ws_state = ChatWsState::new(ws_handler, (*broadcaster).clone());
     let websocket_routes = ws_routes::<ChatMessageHandler>()
         .with_state(ws_state);

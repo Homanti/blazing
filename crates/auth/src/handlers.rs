@@ -24,13 +24,13 @@ pub async fn me_handler(
         User,
         r#"
         SELECT
-            id as "id!",
-            username as "username!",
-            email as "email!",
-            password_hash as "password_hash!",
+            id,
+            username,
+            email,
+            password_hash,
             avatar_url,
-            created_at as "created_at!",
-            updated_at as "updated_at!"
+            created_at,
+            updated_at
         FROM users
         WHERE id = $1
         "#,

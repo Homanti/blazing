@@ -92,7 +92,7 @@ impl AuthService {
             .await
             .map_err(|e| AppError::Database(format!("Error during login: {}", e.to_string())))?;
 
-        let user = user.ok_or(AppError::Unauthorized("User not found".to_string()))?;
+        let user = user.ok_or(AppError::BadRequest("Invalid email or password".to_string()))?;
 
         let password_is_valid = bcrypt::verify(&request.password, &user.password_hash).map_err(|e| AppError::Internal(format!("Failed to verify password: {}", e.to_string())))?;
 
