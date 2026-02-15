@@ -15,6 +15,20 @@ pub struct CurrentUser {
     pub user_id: Uuid,
 }
 
+pub fn validate_token(token: &str, jwt_secret: &str) -> Result<Uuid, AppError> {
+    let token_data = decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(jwt_secret.as_bytes()),
+        &Validation::default(),
+    )
+        .map_err(|_| AppError::Unauthorized("Invalid token".to_string()))?;
+
+    let user_id = Uuid::parse_str(&token_data.claims.sub)
+        .map_err(|_| AppError::Internal("Invalid user ID in token".to_string()))?;
+    
+    Ok(user_id)
+}
+
 pub async fn auth_middleware(
     State(auth_service): State<Arc<AuthService>>,
     mut request: Request,
@@ -30,15 +44,7 @@ pub async fn auth_middleware(
         .strip_prefix("Bearer ")
         .ok_or(AppError::Unauthorized("Invalid authorization format".to_string()))?;
 
-    let token_data = decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(auth_service.jwt_secret.as_bytes()),
-        &Validation::default(),
-    )
-        .map_err(|_| AppError::Unauthorized("Invalid token".to_string()))?;
-
-    let user_id = Uuid::parse_str(&token_data.claims.sub)
-        .map_err(|_| AppError::Internal("Invalid user ID in token".to_string()))?;
+    let user_id = validate_token(token, &auth_service.jwt_secret)?;
 
     request.extensions_mut().insert(CurrentUser { user_id });
 

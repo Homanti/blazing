@@ -3,13 +3,15 @@ use std::error::Error;
 use std::sync::Arc;
 use axum::{Router, routing::get};
 use sqlx::postgres::PgPoolOptions;
+use sqlx::types::Uuid;
 use tokio::net::TcpListener;
 use tokio::runtime::Handle;
 use tokio::signal;
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use blazing_auth::{create_auth_routes, AuthService};
-use blazing_chat::{create_messages_routes, MessagesService};
+use blazing_chat::{MessagesService, create_chat_routes, WsMessage};
+use blazing_ws::Broadcaster;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -33,13 +35,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let jwt_secret = env::var("JWT_SECRET")?;
 
-    let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret));
+    let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret.clone()));
 
-    let messages_service = Arc::new(MessagesService::new(db_pool.clone()));
+    let broadcaster = Arc::new(Broadcaster::<Uuid, WsMessage>::new());
+
+    let messages_service = Arc::new(MessagesService::new(
+        db_pool.clone(),
+        broadcaster.clone()
+    ));
+
+    let broadcaster = Arc::new(Broadcaster::<Uuid, WsMessage>::new());
 
     let api_routes = Router::new()
         .nest("/auth", create_auth_routes(auth_service.clone()))
-        .nest("/messages", create_messages_routes(messages_service, auth_service.clone()));
+        .nest("/chat", create_chat_routes(
+            messages_service,
+            auth_service.clone(),
+            jwt_secret,
+            broadcaster,
+        ));
 
     let app = Router::new()
         .route("/", get(root))
@@ -48,6 +62,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
                 .on_response(trace::DefaultOnResponse::new().level(Level::INFO)));
+
 
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     tracing::info!("Server running on http://localhost:3000");
@@ -89,7 +104,6 @@ async fn shutdown_signal() {
         _ = terminate => {},
     }
     tracing::info!("Received shutdown signal");
-
 }
 
 async fn root() -> &'static str {

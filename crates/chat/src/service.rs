@@ -1,17 +1,29 @@
+use std::sync::Arc;
 use sqlx::PgPool;
 use blazing_models::{AppError, Attachment, GetMessagesRequest, Message, MessageType, SendMessageRequest};
 use sqlx::types::{Json, Uuid};
+use blazing_ws::Broadcaster;
+use crate::WsMessage;
 
 pub struct MessagesService {
     db_pool: PgPool,
+    broadcaster: Arc<Broadcaster<Uuid, WsMessage>>
 }
 
 impl MessagesService {
-    pub fn new(db_pool: PgPool) -> Self {
-        Self { db_pool }
+    pub fn new(db_pool: PgPool, broadcaster: Arc<Broadcaster<Uuid, WsMessage>>) -> Self {
+        Self { db_pool, broadcaster }
+    }
+
+    pub fn get_pool(&self) -> &PgPool {
+        &self.db_pool
     }
 
     pub async fn create_message(&self, request: SendMessageRequest, author_id: Uuid) -> Result<Message, AppError> {
+        if !self.user_has_channel_access(author_id, request.channel_id).await? {
+            return Err(AppError::Forbidden("User is not a member of this guild".to_string()));
+        }
+
         let message_type = request.message_type.unwrap_or(MessageType::Default);
 
         let message = sqlx::query_as!(Message,
@@ -36,6 +48,13 @@ impl MessagesService {
             .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
 
         tracing::info!("Author: {}, Content: {}", message.author_id, message.content);
+
+        if let Err(e) = self.broadcaster.broadcast(
+            &request.channel_id,
+            WsMessage::MessageCreated { message: message.clone() }
+        ).await {
+            tracing::warn!("Failed to broadcast message: {}", e);
+        }
 
         Ok(message)
     }
@@ -62,5 +81,29 @@ impl MessagesService {
             .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
 
         Ok(messages)
+    }
+
+    pub async fn user_has_channel_access(
+        &self,
+        user_id: Uuid,
+        channel_id: Uuid
+    ) -> Result<bool, AppError> {
+        let result = sqlx::query!(
+            r#"
+            SELECT EXISTS(
+                SELECT 1
+                FROM channels c
+                INNER JOIN guild_members gm ON c.guild_id = gm.guild_id
+                WHERE c.id = $1 AND gm.user_id = $2
+            ) as "exists!"
+            "#,
+            channel_id,
+            user_id
+        )
+            .fetch_one(&self.db_pool)
+            .await
+            .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
+
+        Ok(result.exists)
     }
 }

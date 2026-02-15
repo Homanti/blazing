@@ -3,18 +3,17 @@ use axum::{Extension, Json};
 use axum::extract::State;
 use axum::response::IntoResponse;
 use blazing_auth::CurrentUser;
-use blazing_models::{AppError, SendMessageRequest};
+use blazing_models::{AppError, GetMessagesRequest};
 use crate::MessagesService;
 
-pub async fn send_message_handler(
-    Extension(current_user): Extension<CurrentUser>,
+pub async fn get_messages_handler(
+    Extension(_current_user): Extension<CurrentUser>,
     State(messages_service): State<Arc<MessagesService>>,
-    Json(request): Json<SendMessageRequest>
+    Json(request): Json<GetMessagesRequest>
 ) -> Result<impl IntoResponse, AppError> {
-    let message = messages_service
-        .create_message(request, current_user.user_id)
+    let messages = messages_service
+        .get_messages(request)
         .await
-        .map_err(|e| AppError::Internal(format!("Error sending message: {}", e)))?;
-
-    Ok(Json(message))
+        .map_err(|e| AppError::Internal(format!("Error fetching messages: {}", e)))?;
+    Ok(Json(messages))
 }

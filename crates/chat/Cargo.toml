@@ -10,3 +10,7 @@ blazing-models = { workspace = true }
 axum = { workspace = true }
 blazing-auth = { workspace = true }
 tracing = { workspace = true }
+blazing-ws = { workspace = true }
+serde = { workspace = true }
+uuid = { workspace = true }
+async-trait = { workspace = true }
