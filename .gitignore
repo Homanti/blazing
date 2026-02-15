@@ -2,7 +2,7 @@
 /target/
 /crates/*/target/
 .sqlx
-.gitignore
+Cargo.lock
 
 # Frontend
 /frontend/node_modules/
