@@ -15,6 +15,18 @@ pub enum WsMessage {
 
     #[serde(rename = "message_created")]
     MessageCreated { message: Message },
+
+    #[serde(rename = "typing_start")]
+    TypingStart {
+        channel_id: Uuid,
+        user_id: Uuid
+    },
+
+    #[serde(rename = "typing_stop")]
+    TypingStop {
+        channel_id: Uuid,
+        user_id: Uuid
+    },
 }
 
 #[derive(Clone)]
@@ -71,6 +83,14 @@ impl MessageHandler for ChatMessageHandler {
                     channel_id,
                     WsMessage::MessageCreated { message: created_message }
                 )))
+            }
+
+            WsMessage::TypingStart { channel_id, user_id } => {
+                Ok(Some((channel_id, WsMessage::TypingStart { channel_id, user_id })))
+            }
+
+            WsMessage::TypingStop { channel_id, user_id } => {
+                Ok(Some((channel_id, WsMessage::TypingStop { channel_id, user_id })))
             }
             _ => Ok(None),
         }
