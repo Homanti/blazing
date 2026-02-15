@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let port = env::var("PORT").unwrap_or_else(|_| "3000".to_string());
 
     let listener = TcpListener::bind(format!("0.0.0.0:{port}")).await?;
-    tracing::info!("Server running on http://localhost:3000");
+    tracing::info!("Server running on http://0.0.0.0:{port}");
 
     let metrics = Handle::current().metrics();
     let workers = metrics.num_workers();
