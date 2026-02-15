@@ -1,0 +1,45 @@
+:root {
+    --color-scheme: dark;
+
+    --bg-color: hsl(220, 25%, 8%);
+    --bg-elevated: hsl(220, 20%, 12%);
+    --bg-soft: hsl(220, 18%, 16%);
+
+    --text-color: hsl(0, 0%, 92%);
+    --text-muted: hsl(220, 10%, 65%);
+    --text-soft: hsl(220, 8%, 50%);
+
+    --accent-color: hsl(24, 98%, 49%);
+    --accent-hover: hsl(24, 98%, 59%);
+    --accent-active: hsl(24, 98%, 39%);
+    --accent-soft: hsla(24, 98%, 49%, 0.14);
+    --accent-border: hsla(24, 98%, 49%, 0.5);
+
+    --border-accent-dim: hsl(24, 98%, 29%);
+    --border-accent-dark: hsl(24, 98%, 19%);
+    --border-accent-hover: hsl(24, 98%, 39%);
+
+    --border-color-subtle: hsl(220, 18%, 22%);
+    --border-color-strong: hsl(220, 20%, 30%);
+
+    --btn-bg: var(--accent-color);
+    --btn-bg-hover: var(--accent-hover);
+    --btn-bg-active: var(--accent-active);
+    --btn-bg-ghost: var(--accent-soft);
+    --btn-border-ghost: var(--accent-border);
+    --btn-text: hsl(220, 25%, 6%);
+    --btn-text-ghost: var(--accent-color);
+
+    --input-bg: var(--bg-soft);
+    --input-border: var(--border-color-subtle);
+    --input-border-hover: var(--border-color-strong);
+    --input-border-focus: var(--accent-color);
+    --input-placeholder: var(--text-soft);
+
+    --success-color: hsl(145, 45%, 55%);
+    --warning-color: var(--accent-color);
+    --danger-color: hsl(0, 75%, 60%);
+
+    --shadow-soft: 0 10px 30px hsla(0, 0%, 0%, 0.45);
+    --focus-ring: 0 0 0 2px hsla(24, 98%, 49%, 0.6);
+}
