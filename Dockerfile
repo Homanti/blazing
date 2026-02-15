@@ -1,19 +1,14 @@
-FROM rust:1.84 AS chef
-RUN cargo install cargo-chef
+FROM rust:1.84 AS builder
+
 WORKDIR /app
 
-FROM chef AS planner
-COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
 
-FROM chef AS builder
-COPY --from=planner /app/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json
-
-COPY . .
 RUN cargo build --release --bin blazing-server
 
 FROM debian:bookworm-slim
+
 RUN apt-get update && apt-get install -y \
     libssl-dev \
     ca-certificates \
@@ -23,4 +18,5 @@ COPY --from=builder /app/target/release/blazing-server /usr/local/bin/blazing-se
 
 EXPOSE 3000
 ENV RUST_LOG=info
+
 CMD ["blazing-server"]
