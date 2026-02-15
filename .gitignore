@@ -1,7 +1,6 @@
 # Rust
 /target/
 /crates/*/target/
-Cargo.lock
 .sqlx
 
 # Frontend
