@@ -1,7 +1,7 @@
 # Rust
 /target/
 /crates/*/target/
-.sqlx
+#.sqlx
 
 # Frontend
 /frontend/node_modules/

@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT DISTINCT c.id\n                FROM channels c\n                INNER JOIN guild_members gm ON c.guild_id = gm.guild_id\n                WHERE gm.user_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "c79c1709b25ce2a50a4f8b2e97e3edaa431a372e5e5595d8550f8615fedf193f"
+}

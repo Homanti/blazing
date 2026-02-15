@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT EXISTS(\n                SELECT 1\n                FROM channels c\n                INNER JOIN guild_members gm ON c.guild_id = gm.guild_id\n                WHERE c.id = $1 AND gm.user_id = $2\n            ) as \"exists!\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "exists!",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "e548941a76fa0d82055608a8b8c791d1f7d19263d94255ee7ca27342d4b0334e"
+}
