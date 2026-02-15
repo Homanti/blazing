@@ -189,10 +189,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "blazing-desktop"
-version = "0.1.0"
-
-[[package]]
 name = "blazing-files"
 version = "0.1.0"
 
