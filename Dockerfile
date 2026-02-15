@@ -2,12 +2,8 @@ FROM rust:1.93.1 AS builder
 
 WORKDIR /app
 
-RUN cargo install sqlx-cli --no-default-features --features rustls,postgres
-
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
-
-COPY .sqlx ./.sqlx
 
 RUN cargo build --release --bin blazing-server
 
