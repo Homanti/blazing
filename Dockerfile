@@ -5,6 +5,8 @@ WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
 
+COPY .sqlx ./.sqlx
+
 RUN cargo build --release --bin blazing-server
 
 FROM debian:bookworm-slim
