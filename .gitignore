@@ -2,7 +2,6 @@
 /target/
 /crates/*/target/
 .sqlx
-Cargo.lock
 
 # Frontend
 /frontend/node_modules/
