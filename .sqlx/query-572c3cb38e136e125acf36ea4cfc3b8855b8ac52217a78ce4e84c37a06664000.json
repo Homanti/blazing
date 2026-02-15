@@ -1,26 +1,26 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n        SELECT\n            id as \"id!\",\n            username as \"username!\",\n            email as \"email!\",\n            password_hash as \"password_hash!\",\n            avatar_url,\n            created_at as \"created_at!\",\n            updated_at as \"updated_at!\"\n        FROM users\n        WHERE id = $1\n        ",
+  "query": "\n        SELECT\n            id,\n            username,\n            email,\n            password_hash,\n            avatar_url,\n            created_at,\n            updated_at\n        FROM users\n        WHERE id = $1\n        ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "id!",
+        "name": "id",
         "type_info": "Uuid"
       },
       {
         "ordinal": 1,
-        "name": "username!",
+        "name": "username",
         "type_info": "Varchar"
       },
       {
         "ordinal": 2,
-        "name": "email!",
+        "name": "email",
         "type_info": "Varchar"
       },
       {
         "ordinal": 3,
-        "name": "password_hash!",
+        "name": "password_hash",
         "type_info": "Text"
       },
       {
@@ -30,12 +30,12 @@
       },
       {
         "ordinal": 5,
-        "name": "created_at!",
+        "name": "created_at",
         "type_info": "Timestamptz"
       },
       {
         "ordinal": 6,
-        "name": "updated_at!",
+        "name": "updated_at",
         "type_info": "Timestamptz"
       }
     ],
@@ -54,5 +54,5 @@
       false
     ]
   },
-  "hash": "da554493ce61284fed2f9192c210bb7b07a5d43bd9c4e1365db5a79e408fca49"
+  "hash": "572c3cb38e136e125acf36ea4cfc3b8855b8ac52217a78ce4e84c37a06664000"
 }
