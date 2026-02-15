@@ -36,9 +36,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let jwt_secret = env::var("JWT_SECRET")?;
 
     let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret.clone()));
-
     let broadcaster = Arc::new(Broadcaster::<Uuid, WsMessage>::new());
-
     let messages_service = Arc::new(MessagesService::new(
         db_pool.clone(),
         broadcaster.clone()
@@ -63,8 +61,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
                 .on_response(trace::DefaultOnResponse::new().level(Level::INFO)));
 
+    let port = env::var("PORT").unwrap_or_else(|_| "3000".to_string());
 
-    let listener = TcpListener::bind("0.0.0.0:3000").await?;
+    let listener = TcpListener::bind(format!("0.0.0.0:{port}")).await?;
     tracing::info!("Server running on http://localhost:3000");
 
     let metrics = Handle::current().metrics();
