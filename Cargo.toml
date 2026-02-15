@@ -8,8 +8,6 @@ members = [
     "crates/guilds",
     "crates/server",
     "crates/websocket",
-    
-    "frontend/src-tauri",
 ]
 resolver = "2"
 
