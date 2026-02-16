@@ -2,11 +2,13 @@ use std::env;
 use std::error::Error;
 use std::sync::Arc;
 use axum::{Router, routing::get};
+use axum::http::Method;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::types::Uuid;
 use tokio::net::TcpListener;
 use tokio::runtime::Handle;
 use tokio::signal;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use blazing_auth::{create_auth_routes, AuthService};
@@ -16,6 +18,16 @@ use blazing_ws::Broadcaster;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenvy::dotenv().ok();
+
+    let cors = CorsLayer::new()
+        .allow_origin([
+            "http://localhost:5173".parse().unwrap(),
+            "http://192.168.86.246:5173".parse().unwrap(),
+            "https://blazing.up.railway.app".parse().unwrap(),
+        ])
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
+        .allow_headers(Any)
+        .allow_credentials(true);
 
     tracing_subscriber::fmt()
         .with_target(false)
@@ -41,9 +53,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         db_pool.clone(),
         broadcaster.clone()
     ));
-
-    let broadcaster = Arc::new(Broadcaster::<Uuid, WsMessage>::new());
-
+        
     let api_routes = Router::new()
         .nest("/auth", create_auth_routes(auth_service.clone()))
         .nest("/chat", create_chat_routes(
@@ -58,7 +68,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
-                .on_response(trace::DefaultOnResponse::new().level(Level::INFO)));
+                .on_response(trace::DefaultOnResponse::new().level(Level::INFO)))
+        .layer(cors);
 
     let port = env::var("PORT").unwrap_or_else(|_| "3000".to_string());
 
