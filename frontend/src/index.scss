@@ -1,5 +1,6 @@
 :root {
     --color-scheme: dark;
+    --font-family: system-ui, Avenir, Helvetica, Arial;
 
     --bg-color: hsl(220, 25%, 8%);
     --bg-elevated: hsl(220, 20%, 12%);
@@ -10,7 +11,7 @@
     --text-soft: hsl(220, 8%, 50%);
 
     --accent-color: hsl(24, 98%, 49%);
-    --accent-hover: hsl(24, 98%, 59%);
+    --accent-hover: hsl(24, 98%, 57%);
     --accent-active: hsl(24, 98%, 39%);
     --accent-soft: hsla(24, 98%, 49%, 0.14);
     --accent-border: hsla(24, 98%, 49%, 0.5);
@@ -27,7 +28,7 @@
     --btn-bg-active: var(--accent-active);
     --btn-bg-ghost: var(--accent-soft);
     --btn-border-ghost: var(--accent-border);
-    --btn-text: hsl(220, 25%, 6%);
+    --btn-text: var(--text-color);
     --btn-text-ghost: var(--accent-color);
 
     --input-bg: var(--bg-soft);
@@ -42,4 +43,27 @@
 
     --shadow-soft: 0 10px 30px hsla(0, 0%, 0%, 0.45);
     --focus-ring: 0 0 0 2px hsla(24, 98%, 49%, 0.6);
+
+    --border-radius: 0.5rem;
+}
+
+html, body, #root {
+    font-family: var(--font-family), sans-serif;
+
+    height: 100%;
+    width: 100%;
+
+    color: var(--text-color);
+
+    background-color: var(--bg-color);
+    color-scheme: var(--color-scheme);
+
+    padding: 0;
+    margin: 0;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }

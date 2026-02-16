@@ -2,13 +2,13 @@ use std::env;
 use std::error::Error;
 use std::sync::Arc;
 use axum::{Router, routing::get};
-use axum::http::Method;
+use axum::http::{header, Method};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::types::Uuid;
 use tokio::net::TcpListener;
 use tokio::runtime::Handle;
 use tokio::signal;
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::cors::CorsLayer;
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use blazing_auth::{create_auth_routes, AuthService};
@@ -26,7 +26,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
             "https://blazing.up.railway.app".parse().unwrap(),
         ])
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
-        .allow_headers(Any)
+        .allow_headers([
+            header::CONTENT_TYPE,
+            header::AUTHORIZATION,
+            header::ACCEPT,
+        ])
         .allow_credentials(true);
 
     tracing_subscriber::fmt()

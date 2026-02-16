@@ -1,0 +1,40 @@
+@mixin input-base {
+    background: var(--input-bg);
+    border: 0.0625rem solid var(--input-border);
+    border-radius: var(--border-radius);
+    padding: 0.65rem 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    outline: none;
+
+    caret-color: var(--accent-color);
+
+    &::placeholder {
+        color: var(--input-placeholder);
+    }
+
+    &:hover {
+        border-color: var(--input-border-hover);
+        background: var(--bg-elevated);
+    }
+
+    &:focus {
+        border-color: var(--input-border-focus);
+        background: var(--bg-elevated);
+        box-shadow:
+                0 0 0 0.1875rem hsla(24, 98%, 49%, 0.12),
+                0 0 1.25rem hsla(24, 98%, 49%, 0.15);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        border-color: var(--border-color-subtle);
+    }
+}
+
+.input {
+    @include input-base;
+}

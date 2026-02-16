@@ -1,13 +1,15 @@
-import "./index.scss"
+import {useLocation, useRoutes} from "react-router-dom";
+import {routes} from "@/routes.tsx";
 
 function App() {
+    const location = useLocation();
+    const element = useRoutes(routes, location);
 
-  return (
-    <>
-        <button>
-        </button>
-    </>
-  )
+    return (
+        <>
+            {element}
+        </>
+    )
 }
 
 export default App

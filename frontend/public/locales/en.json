@@ -1,0 +1,66 @@
+{
+    "common": {
+        "button": {
+            "submit": "Submit",
+            "cancel": "Cancel",
+            "save": "Save",
+            "delete": "Delete",
+            "edit": "Edit",
+            "close": "Close"
+        },
+        "validation": {
+            "required": "This field is required",
+            "email": "Invalid email address",
+            "minLength": "Minimum {{count}} characters",
+            "maxLength": "Maximum {{count}} characters"
+        },
+        "loading": "Loading...",
+        "error": "Something went wrong"
+    },
+    "auth": {
+        "login": {
+            "welcomeMessage": "Welcome to Blazing!",
+            "title": "Login",
+            "username": "Username",
+            "email": "Email",
+            "password": "Password",
+            "forgotPassword": "Forgot password?",
+            "submit": "Sign In",
+            "noAccount": "Don't have an account?",
+            "register": "Sign Up"
+        },
+        "register": {
+            "title": "Registration",
+            "confirmPassword": "Confirm Password",
+            "submit": "Create Account",
+            "haveAccount": "Already have an account?",
+            "login": "Sign In"
+        },
+        "errors": {
+            "invalidCredentials": "Invalid username or password",
+            "userExists": "User already exists",
+            "weakPassword": "Password is too weak"
+        }
+    },
+    "dashboard": {
+        "welcome": "Welcome back, {{name}}!",
+        "stats": {
+            "users": "Users",
+            "active": "Active",
+            "total": "Total"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "profile": {
+            "title": "Profile",
+            "avatar": "Avatar",
+            "displayName": "Display Name"
+        },
+        "preferences": {
+            "title": "Preferences",
+            "language": "Language",
+            "theme": "Theme"
+        }
+    }
+}
