@@ -1,6 +1,7 @@
 use std::env;
 use std::error::Error;
 use std::sync::Arc;
+use std::time::Duration;
 use axum::{Router, routing::get};
 use axum::http::{header, Method};
 use sqlx::postgres::PgPoolOptions;
@@ -21,9 +22,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let cors = CorsLayer::new()
         .allow_origin([
-            "http://localhost:5173".parse().unwrap(),
-            "http://192.168.86.246:5173".parse().unwrap(),
-            "https://blazing.up.railway.app".parse().unwrap(),
+            "http://localhost:5173".parse()?,
+            "http://192.168.86.246:5173".parse()?,
+            "https://blazing.up.railway.app".parse()?,
         ])
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS])
         .allow_headers([
@@ -53,10 +54,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let auth_service = Arc::new(AuthService::new(db_pool.clone(), jwt_secret.clone()));
     let broadcaster = Arc::new(Broadcaster::<Uuid, WsMessage>::new());
-    let messages_service = Arc::new(MessagesService::new(
-        db_pool.clone(),
-        broadcaster.clone()
-    ));
+    let messages_service = Arc::new(MessagesService::new(db_pool.clone()));
+
+    let broadcaster_cleanup = broadcaster.clone();
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(Duration::from_secs(300));
+        loop {
+            interval.tick().await;
+            broadcaster_cleanup.cleanup_empty_channels();
+            tracing::debug!("Cleanup: {} active channels", broadcaster_cleanup.active_channels());
+        }
+    });
         
     let api_routes = Router::new()
         .nest("/auth", create_auth_routes(auth_service.clone()))

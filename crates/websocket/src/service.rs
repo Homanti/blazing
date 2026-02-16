@@ -2,8 +2,9 @@ use crate::{ClientId, Result, Broadcaster};
 use axum::extract::ws::{Message, WebSocket};
 use serde::{Serialize, de::DeserializeOwned};
 use async_trait::async_trait;
-use futures::{StreamExt, SinkExt};
+use futures::{StreamExt, SinkExt, stream::{SelectAll, select_all}};
 use std::sync::Arc;
+use tokio_stream::wrappers::BroadcastStream;
 
 #[async_trait]
 pub trait MessageHandler: Send + Sync + 'static {
@@ -59,7 +60,7 @@ impl WebSocketService {
             }
         };
 
-        if let Err(e) = broadcasts.broadcast(&broadcast_key, message_to_send).await {
+        if let Err(e) = broadcasts.broadcast(&broadcast_key, message_to_send) {
             tracing::error!("Broadcast failed: {}", e);
         }
     }
@@ -100,26 +101,31 @@ impl WebSocketService {
             }
         };
 
-        let mut receivers = Vec::new();
+        let mut broadcast_receivers = Vec::new();
         for key in user_channels {
-            receivers.push(broadcasts.subscribe(&key).await);
+            broadcast_receivers.push(broadcasts.subscribe(&key));
         }
 
+        let mut combined_stream: SelectAll<BroadcastStream<H::Message>> =
+            select_all(broadcast_receivers.into_iter().map(BroadcastStream::new));
+
         let mut send_task = tokio::spawn(async move {
-            loop {
-                let mut received = false;
-                for rx in &mut receivers {
-                    if let Ok(msg) = rx.try_recv() {
+            while let Some(result) = combined_stream.next().await {
+                match result {
+                    Ok(msg) => {
                         if let Ok(json) = serde_json::to_string(&msg) {
                             if sender.send(Message::Text(json.into())).await.is_err() {
+                                tracing::debug!("Client {} WebSocket closed", client_id);
                                 return;
                             }
-                            received = true;
                         }
                     }
-                }
-                if !received {
-                    tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+                    Err(tokio_stream::wrappers::errors::BroadcastStreamRecvError::Lagged(n)) => {
+                        tracing::warn!(
+                        "Client {} lagged by {} messages, some messages were dropped",
+                        client_id, n
+                    );
+                    }
                 }
             }
         });
@@ -128,22 +134,43 @@ impl WebSocketService {
         let handler_clone = handler.clone();
         let mut recv_task = tokio::spawn(async move {
             while let Some(Ok(msg)) = receiver.next().await {
-                if let Message::Text(text) = msg {
-                    Self::handle_incoming_message::<H>(
-                        client_id,
-                        user_id,
-                        &text,
-                        &broadcasts_clone,
-                        &handler_clone,
-                    ).await;
+                match msg {
+                    Message::Text(text) => {
+                        Self::handle_incoming_message::<H>(
+                            client_id,
+                            user_id,
+                            &text,
+                            &broadcasts_clone,
+                            &handler_clone,
+                        ).await;
+                    }
+                    Message::Close(_) => {
+                        tracing::debug!("Client {} sent close frame", client_id);
+                        break;
+                    }
+                    Message::Ping(_) => {
+                        tracing::trace!("Received ping from client {}", client_id);
+                    }
+                    Message::Pong(_) => {
+                        tracing::trace!("Received pong from client {}", client_id);
+                    }
+                    Message::Binary(_) => {
+                        tracing::warn!("Client {} sent unexpected binary message", client_id);
+                    }
                 }
             }
         });
 
         tokio::select! {
-            _ = &mut send_task => recv_task.abort(),
-            _ = &mut recv_task => send_task.abort(),
-        }
+        _ = &mut send_task => {
+            recv_task.abort();
+            tracing::debug!("Send task completed for client {}", client_id);
+        },
+        _ = &mut recv_task => {
+            send_task.abort();
+            tracing::debug!("Receive task completed for client {}", client_id);
+        },
+    }
 
         tracing::info!("Client disconnected: {}", client_id);
         let _ = handler.on_disconnect(client_id).await;
