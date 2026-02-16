@@ -13,7 +13,9 @@ function DockItem({route, title, iconUrl, icon}: DockItemProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isActive = route === location.pathname;
+    const isActive = route
+        ? location.pathname.startsWith(`${route}/dm`) || location.pathname === route
+        : false;
 
     return (
         <IconButton variant={isActive ? "primary" : "secondary"} className={`${styles.dockItem}`} onClick={() => {if (!route) return; navigate(route)}} title={title}>

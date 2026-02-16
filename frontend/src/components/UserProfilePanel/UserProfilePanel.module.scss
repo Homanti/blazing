@@ -1,0 +1,54 @@
+@use "@/styles/mixins" as *;
+
+.panel {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+    align-items: center;
+
+    width: max-content;
+
+    margin: 0;
+    padding: 5px;
+
+    gap: 10px;
+
+    border-radius: var(--border-radius);
+
+    @include panel;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    margin-left: 100px;
+
+    gap: 10px;
+}
+
+.iconButton {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    padding: 5px;
+    gap: 10px;
+
+    background: transparent;
+    border: none;
+
+    &:hover {
+        background: var(--accent-soft);
+        cursor: pointer;
+
+        transition: background-color 0.2s;
+    }
+}

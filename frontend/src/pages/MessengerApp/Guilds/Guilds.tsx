@@ -1,6 +1,8 @@
 function Guilds() {
     return (
-        <div></div>
+        <main>
+            Guilds
+        </main>
     );
 }
 

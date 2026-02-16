@@ -1,0 +1,16 @@
+@use "@/styles/mixins" as *;
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px;
+    gap: 5px;
+
+    height: 100%;
+    width: 100%;
+
+    border-radius: var(--border-radius);
+
+    @include panel;
+}

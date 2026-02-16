@@ -1,6 +1,8 @@
 function Dm() {
     return (
-        <div></div>
+        <main>
+            Dm
+        </main>
     );
 }
 

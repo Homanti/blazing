@@ -2,7 +2,8 @@ const PAGES = {
     HOME: "/",
     LOGIN: "/login",
     REGISTER: "/register",
-    APP: "/app"
+    APP: "/app",
+    DM: "/app/dm"
 }
 
 export default PAGES;
