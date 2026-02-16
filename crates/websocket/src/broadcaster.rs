@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::{broadcast, RwLock};
+use dashmap::DashMap;
+use tokio::sync::broadcast;
 
 #[derive(Clone)]
 pub struct Broadcaster<K, V>
@@ -8,7 +8,7 @@ where
     K: std::hash::Hash + Eq + Clone,
     V: Clone,
 {
-    channels: Arc<RwLock<HashMap<K, broadcast::Sender<V>>>>,
+    channels: Arc<DashMap<K, broadcast::Sender<V>>>,
     capacity: usize,
 }
 
@@ -19,25 +19,27 @@ where
 {
     pub fn new() -> Self {
         Self {
-            channels: Arc::new(RwLock::new(HashMap::new())),
-            capacity: 100,
+            channels: Arc::new(DashMap::new()),
+            capacity: 1000,
         }
     }
 
-    pub async fn subscribe(&self, key: &K) -> broadcast::Receiver<V> {
-        let mut channels = self.channels.write().await;
-
-        let sender = channels
-            .entry(key.clone())
-            .or_insert_with(|| broadcast::channel(self.capacity).0);
-
-        sender.subscribe()
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            channels: Arc::new(DashMap::new()),
+            capacity,
+        }
     }
 
-    pub async fn broadcast(&self, key: &K, message: V) -> Result<usize, String> {
-        let channels = self.channels.read().await;
+    pub fn subscribe(&self, key: &K) -> broadcast::Receiver<V> {
+        self.channels
+            .entry(key.clone())
+            .or_insert_with(|| broadcast::channel(self.capacity).0)
+            .subscribe()
+    }
 
-        if let Some(sender) = channels.get(key) {
+    pub fn broadcast(&self, key: &K, message: V) -> Result<usize, String> {
+        if let Some(sender) = self.channels.get(key) {
             let receiver_count = sender.receiver_count();
 
             if receiver_count > 0 {
@@ -49,5 +51,13 @@ where
         } else {
             Ok(0)
         }
+    }
+
+    pub fn active_channels(&self) -> usize {
+        self.channels.len()
+    }
+
+    pub fn cleanup_empty_channels(&self) {
+        self.channels.retain(|_, sender| sender.receiver_count() > 0);
     }
 }

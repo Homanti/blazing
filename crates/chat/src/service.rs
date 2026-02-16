@@ -1,19 +1,15 @@
-use std::sync::Arc;
 use sqlx::PgPool;
 use blazing_models::{AppError, Attachment, GetMessagesRequest, Message, MessageType, SendMessageRequest};
 use sqlx::types::{Json, Uuid};
 use blazing_auth::CurrentUser;
-use blazing_ws::Broadcaster;
-use crate::WsMessage;
 
 pub struct MessagesService {
     db_pool: PgPool,
-    broadcaster: Arc<Broadcaster<Uuid, WsMessage>>
 }
 
 impl MessagesService {
-    pub fn new(db_pool: PgPool, broadcaster: Arc<Broadcaster<Uuid, WsMessage>>) -> Self {
-        Self { db_pool, broadcaster }
+    pub fn new(db_pool: PgPool) -> Self {
+        Self { db_pool }
     }
 
     pub fn get_pool(&self) -> &PgPool {
@@ -47,15 +43,6 @@ impl MessagesService {
             .fetch_one(&self.db_pool)
             .await
             .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
-
-        tracing::info!("Author: {}, Content: {}", message.author_id, message.content);
-
-        if let Err(e) = self.broadcaster.broadcast(
-            &request.channel_id,
-            WsMessage::MessageCreated { message: message.clone() }
-        ).await {
-            tracing::warn!("Failed to broadcast message: {}", e);
-        }
 
         Ok(message)
     }
