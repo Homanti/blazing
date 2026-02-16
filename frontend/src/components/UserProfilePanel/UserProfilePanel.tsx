@@ -10,8 +10,10 @@ type UserProfilePanelProps = {
 function UserProfilePanel({user}: UserProfilePanelProps) {
     return (
         <div className={styles.panel}>
-            <Avatar username={user.username} avatarUrl={user.avatarUrl} />
-            {user.username}
+            <div className={styles.profile}>
+                <Avatar username={user.username} avatarUrl={user.avatarUrl} />
+                {user.username}
+            </div>
 
             <div className={styles.actions}>
                 <button className={styles.iconButton}>

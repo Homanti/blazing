@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import PAGES from "@/configs/pages.config.ts";
 import Avatar from "@/components/Avatar/Avatar.tsx";
 import styles from "./ChatItem.module.scss";
@@ -11,9 +11,13 @@ type ChatItemProps = {
 
 function ChatItem({username, avatarUrl, channelId}: ChatItemProps) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const path = PAGES.DM + `/${channelId}`;
+
+    const isActive = path === location.pathname;
 
     return (
-        <div className={styles.chatItem} onClick={() => navigate(PAGES.DM + `/${channelId}`)}>
+        <div className={`${styles.chatItem} ${isActive ? styles.active : ""}`} onClick={() => navigate(path)}>
             <Avatar username={username} avatarUrl={avatarUrl} />
             {username}
         </div>

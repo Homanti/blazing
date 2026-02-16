@@ -7,14 +7,19 @@
     align-items: center;
     justify-content: start;
 
-    padding: 5px;
+    padding: 5px 150px 5px 20px;
     gap: 5px;
+
+    transition: background-color 0.2s;
 
     border-radius: var(--border-radius);
 
-    border: 2px solid var(--border-color-strong);
-
     &:hover {
         cursor: pointer;
+        background-color: var(--bg-elevated);
     }
+}
+
+.active {
+    background-color: var(--bg-elevated);
 }
