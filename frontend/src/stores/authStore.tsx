@@ -20,7 +20,10 @@ type AuthStore = {
     accounts: Account[];
     currentAccount: Account | null;
 
+    addAccount(account: Account): void;
+
     login(email: string, password: string): Promise<User>;
+    register(email: string, username: string, password: string): Promise<User>;
 }
 
 export const useAuthStore = create<AuthStore>() (
@@ -29,18 +32,8 @@ export const useAuthStore = create<AuthStore>() (
             accounts: [],
             currentAccount: null,
 
-            login: async (email, password) => {
-                const user = await apiClient.post('/api/v1/auth/login', {
-                    email,
-                    password
-                });
-
-                const account: Account = {
-                    user: user.data.user,
-                    token: user.data.token
-                };
-
-                const existingIndex = get().accounts.findIndex(acc => acc.user.id === user.data.user.id);
+            addAccount(account: Account) {
+                const existingIndex = get().accounts.findIndex(acc => acc.user.id === account.user.id);
 
                 if (existingIndex !== -1) {
                     set(state => ({
@@ -55,6 +48,37 @@ export const useAuthStore = create<AuthStore>() (
                         currentAccount: account
                     }));
                 }
+            },
+
+            login: async (email, password) => {
+                const user = await apiClient.post('/api/v1/auth/login', {
+                    email,
+                    password
+                });
+
+                const account: Account = {
+                    user: user.data.user,
+                    token: user.data.token
+                };
+
+                get().addAccount(account);
+
+                return user.data.user;
+            },
+
+            register: async (email, username, password) => {
+                const user = await apiClient.post('/api/v1/auth/register', {
+                    email,
+                    username,
+                    password
+                });
+
+                const account: Account = {
+                    user: user.data.user,
+                    token: user.data.token
+                };
+
+                get().addAccount(account);
 
                 return user.data.user;
             }

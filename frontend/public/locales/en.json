@@ -18,12 +18,14 @@
         "error": "Something went wrong"
     },
     "auth": {
-        "login": {
+        "common": {
             "welcomeMessage": "Welcome to Blazing!",
-            "title": "Login",
             "username": "Username",
             "email": "Email",
-            "password": "Password",
+            "password": "Password"
+        },
+        "login": {
+            "title": "Login",
             "forgotPassword": "Forgot password?",
             "submit": "Sign In",
             "noAccount": "Don't have an account?",
