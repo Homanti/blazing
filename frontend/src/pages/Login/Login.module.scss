@@ -21,10 +21,19 @@ main {
     gap: 0.4375rem;
 
     border-radius: var(--border-radius);
-    border: 2px solid var(--accent-border);
+    border: 2px solid var(--accent-color);
 
     .title {
         margin: 0 0 0.625rem 0;
+    }
+
+    .actions {
+        display: flex;
+        gap: 5px;
+
+        & button {
+            width: 100%;
+        }
     }
 }
 

@@ -37,8 +37,10 @@ function Login() {
                 <Input placeholder={t('auth.common.password')} type={"password"} onChange={(e) => setPassword(e.target.value)} value={password} />
 
                 <Button variant={"primary"} type={"submit"} disabled={(!email || !password)}>{t('auth.login.submit')}</Button>
-                <Button variant={"secondary"} type={"button"} onClick={() => navigate(PAGES.REGISTER)}>{t('auth.login.register')}</Button>
-                <Button variant={"outlined"} type={"button"}>{t('auth.login.forgotPassword')}</Button>
+                <div className={styles.actions}>
+                    <Button variant={"secondary"} type={"button"} onClick={() => navigate(PAGES.REGISTER)}>{t('auth.login.register')}</Button>
+                    <Button variant={"outlined"} type={"button"}>{t('auth.login.forgotPassword')}</Button>
+                </div>
             </form>
         </main>
     );
