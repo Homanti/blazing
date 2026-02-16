@@ -19,13 +19,15 @@ pub enum WsMessage {
     #[serde(rename = "typing_start")]
     TypingStart {
         channel_id: Uuid,
-        user_id: Uuid
+        #[serde(skip_serializing_if = "Option::is_none")]
+        user_id: Option<Uuid>,
     },
 
     #[serde(rename = "typing_stop")]
     TypingStop {
         channel_id: Uuid,
-        user_id: Uuid
+        #[serde(skip_serializing_if = "Option::is_none")]
+        user_id: Option<Uuid>,
     },
 }
 
@@ -85,13 +87,26 @@ impl MessageHandler for ChatMessageHandler {
                 )))
             }
 
-            WsMessage::TypingStart { channel_id, user_id } => {
-                Ok(Some((channel_id, WsMessage::TypingStart { channel_id, user_id })))
+            WsMessage::TypingStart { channel_id, user_id: _ } => {
+                Ok(Some((
+                    channel_id,
+                    WsMessage::TypingStart {
+                        channel_id,
+                        user_id: Some(user_id)
+                    }
+                )))
             }
 
-            WsMessage::TypingStop { channel_id, user_id } => {
-                Ok(Some((channel_id, WsMessage::TypingStop { channel_id, user_id })))
+            WsMessage::TypingStop { channel_id, user_id: _ } => {
+                Ok(Some((
+                    channel_id,
+                    WsMessage::TypingStop {
+                        channel_id,
+                        user_id: Some(user_id)
+                    }
+                )))
             }
+
             _ => Ok(None),
         }
     }
