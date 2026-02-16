@@ -22,6 +22,8 @@ function Login() {
         const user = await login(email, password);
 
         if (!user) return;
+
+        navigate(PAGES.APP);
         console.debug(user);
     }
 

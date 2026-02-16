@@ -1,0 +1,38 @@
+main {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-content: center;
+
+    height: 100%;
+    width: 100%;
+}
+
+.hero {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.9375rem;
+
+    border: 2px solid var(--accent-color);
+
+    background: var(--bg-soft);
+
+    padding: 1.25rem 1.875rem;
+    border-radius: var(--border-radius);
+
+    &__title {
+        margin: 0;
+    }
+
+    &__description {
+        margin: 0;
+    }
+
+    &__actions {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+}

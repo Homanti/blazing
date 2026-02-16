@@ -1,0 +1,27 @@
+.dock {
+    display: flex;
+    flex-direction: row;
+
+    position: sticky;
+
+    max-width: 95%;
+
+    overflow-x: auto;
+
+    top: 5px;
+
+    margin: 0 auto;
+    padding: 5px;
+
+    gap: 1rem;
+
+    border-radius: var(--border-radius);
+
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    backdrop-filter: blur(20px);
+}

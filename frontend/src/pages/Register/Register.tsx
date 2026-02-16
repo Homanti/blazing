@@ -24,6 +24,8 @@ function Register() {
         const user = await register(email, username, password);
 
         if (!user) return;
+
+        navigate(PAGES.APP);
         console.debug(user);
     }
 

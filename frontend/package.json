@@ -15,6 +15,7 @@
     "i18next": "^25.8.8",
     "i18next-browser-languagedetector": "^8.2.1",
     "i18next-http-backend": "^3.0.2",
+    "lucide-react": "^0.564.0",
     "motion": "^12.34.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
