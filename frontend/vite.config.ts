@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(() => ({
     plugins: [react()],
     resolve: {
         alias: { '@': path.resolve(__dirname, './src') }
@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => ({
     server: {
         proxy: {
             '/api': {
-                target: mode === 'production'
-                    ? 'https://blazing-api.up.railway.app'
-                    : 'http://localhost:3000',
+                target: 'https://blazing-api.up.railway.app',
                 ws: true,
                 changeOrigin: true,
             },
