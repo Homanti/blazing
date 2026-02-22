@@ -1,4 +1,4 @@
-.button {
+@mixin button-base {
     border: 0.0625rem solid var(--accent-border);
     padding: 0.5rem 2rem;
     border-radius: var(--border-radius);
@@ -30,7 +30,7 @@
     }
 }
 
-.primary {
+@mixin button-primary {
     background: var(--btn-bg);
     color: var(--btn-text);
     border-color: var(--accent-color);
@@ -64,7 +64,7 @@
     }
 }
 
-.secondary {
+@mixin button-secondary {
     background: var(--btn-bg-ghost);
     color: var(--btn-text-ghost);
     border-color: var(--accent-border);
@@ -86,8 +86,7 @@
         border-color: var(--border-color-subtle);
     }
 }
-
-.outlined {
+@mixin button-outlined {
     background: transparent;
     color: var(--text-color);
     border-color: var(--border-color-strong);
@@ -112,3 +111,9 @@
         color: var(--text-soft);
     }
 }
+
+.button { @include button-base; }
+
+.primary   { @include button-primary; }
+.secondary { @include button-secondary; }
+.outlined  { @include button-outlined; }

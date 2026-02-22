@@ -4,11 +4,7 @@ import {useAuthStore} from "@/stores/authStore.tsx";
 import UserProfilePanel from "@/components/UserProfilePanel/UserProfilePanel.tsx";
 
 const users = [
-    {username: "bebra", channelId: "1"},
-    {username: "bebra", channelId: "2"},
-    {username: "bebra", channelId: "3"},
-    {username: "bebra", channelId: "4"},
-    {username: "bebra", channelId: "5"},
+    {username: "88649c79-b0bd-488d-8217-326a7e662364", channelId: "88649c79-b0bd-488d-8217-326a7e662364"},
 ]
 
 function ChatsSidebar() {

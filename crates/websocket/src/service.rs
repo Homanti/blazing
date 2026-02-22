@@ -172,7 +172,6 @@ impl WebSocketService {
         },
     }
 
-        tracing::info!("Client disconnected: {}", client_id);
         let _ = handler.on_disconnect(client_id).await;
     }
 }

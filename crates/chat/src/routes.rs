@@ -1,9 +1,10 @@
-use axum::{routing::post, Router, middleware};
+use axum::{routing::get, Router, middleware};
 use std::sync::Arc;
 use blazing_ws::{ws_routes, Broadcaster};
 use blazing_auth::{AuthService, auth_middleware};
-use crate::{handlers, MessagesService, ChatWsState, ChatMessageHandler, WsMessage};
+use crate::{handlers, MessagesService, ChatWsState, ChatMessageHandler};
 use uuid::Uuid;
+use blazing_models::WsMessage;
 
 pub fn create_chat_routes(
     messages_service: Arc<MessagesService>,
@@ -11,7 +12,7 @@ pub fn create_chat_routes(
     broadcaster: Arc<Broadcaster<Uuid, WsMessage>>,
 ) -> Router {
     let rest_routes = Router::new()
-        .route("/messages/history", post(handlers::get_messages_handler))
+        .route("/history", get(handlers::get_messages_handler))
         .layer(middleware::from_fn_with_state(
             auth_service.clone(),
             auth_middleware,

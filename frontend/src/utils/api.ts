@@ -1,6 +1,5 @@
 import axios, { type AxiosInstance } from 'axios';
 import camelcaseKeys from 'camelcase-keys';
-import {API_URL} from "@/configs/api.config.ts";
 import {useAuthStore} from "@/stores/authStore.tsx";
 
 class ApiClient {
@@ -8,7 +7,7 @@ class ApiClient {
 
     constructor() {
         this.api = axios.create({
-            baseURL: API_URL,
+            baseURL: '',
             timeout: 10000,
         });
 

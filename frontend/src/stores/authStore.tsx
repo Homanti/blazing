@@ -1,20 +1,7 @@
 import {create} from "zustand";
 import {persist} from "zustand/middleware";
 import apiClient from "@/utils/api";
-
-export type User = {
-    id: string;
-    username: string;
-    email: string;
-    avatarUrl: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export type Account = {
-    user: User;
-    token: string;
-}
+import type {User, Account} from "@/types/user";
 
 type AuthStore = {
     accounts: Account[];

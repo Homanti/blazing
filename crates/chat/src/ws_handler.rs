@@ -1,35 +1,10 @@
 use async_trait::async_trait;
-use blazing_models::{Message, SendMessageRequest};
 use blazing_ws::{MessageHandler, ClientId, Result};
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 use blazing_auth::validate_token;
+use blazing_models::WsMessage;
 use crate::MessagesService;
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum WsMessage {
-    #[serde(rename = "message")]
-    NewMessage(SendMessageRequest),
-
-    #[serde(rename = "message_created")]
-    MessageCreated { message: Message },
-
-    #[serde(rename = "typing_start")]
-    TypingStart {
-        channel_id: Uuid,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        user_id: Option<Uuid>,
-    },
-
-    #[serde(rename = "typing_stop")]
-    TypingStop {
-        channel_id: Uuid,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        user_id: Option<Uuid>,
-    },
-}
 
 #[derive(Clone)]
 pub struct ChatMessageHandler {

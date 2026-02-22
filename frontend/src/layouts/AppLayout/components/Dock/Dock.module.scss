@@ -1,32 +1,23 @@
-@use "@/styles/mixins" as *;
-
 .dock {
     display: flex;
     flex-direction: row;
 
-    position: absolute;
-
-    max-width: 95%;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
 
     overflow-x: auto;
-
-    top: 20px;
-
-    left: 50%;
-    transform: translateX(-50%);
 
     margin: 0;
     padding: 5px;
 
     gap: 1rem;
 
-    border-radius: var(--border-radius);
-
     scroll-behavior: smooth;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
 
-    @include panel;
+    background: var(--bg-soft);
 
     z-index: 10;
 }

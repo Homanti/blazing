@@ -13,7 +13,8 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::{self, TraceLayer};
 use tracing::Level;
 use blazing_auth::{create_auth_routes, AuthService};
-use blazing_chat::{MessagesService, create_chat_routes, WsMessage};
+use blazing_chat::{MessagesService, create_chat_routes};
+use blazing_models::WsMessage;
 use blazing_ws::Broadcaster;
 
 #[tokio::main]

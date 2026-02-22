@@ -1,5 +1,3 @@
-@use "@/styles/mixins" as *;
-
 .chatItem {
     display: flex;
     flex-direction: row;
@@ -12,9 +10,13 @@
 
     border-radius: var(--border-radius);
 
-    border: 2px solid var(--border-color-strong);
-
     &:hover {
         cursor: pointer;
+        background: var(--bg-elevated);
     }
+
+}
+
+.active {
+    background: var(--bg-elevated);
 }

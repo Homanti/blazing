@@ -4,6 +4,7 @@ mod handlers;
 mod ws_handler;
 
 use uuid::Uuid;
+use blazing_models::WsMessage;
 pub use service::*;
 
 pub use routes::*;

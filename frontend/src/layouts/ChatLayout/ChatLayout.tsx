@@ -5,9 +5,7 @@ import ChatsSidebar from "@/layouts/ChatLayout/components/ChatsSidebar/ChatsSide
 function ChatLayout() {
     return (
         <div className={styles.chatLayout}>
-            <div className={styles.left}>
-                <ChatsSidebar />
-            </div>
+            <ChatsSidebar />
             <Outlet />
         </div>
     );
