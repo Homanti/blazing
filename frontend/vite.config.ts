@@ -7,14 +7,5 @@ export default defineConfig(() => ({
     plugins: [react()],
     resolve: {
         alias: { '@': path.resolve(__dirname, './src') }
-    },
-    server: {
-        proxy: {
-            '/api': {
-                target: 'https://blazing-api.up.railway.app',
-                ws: true,
-                changeOrigin: true,
-            },
-        },
     }
 }));

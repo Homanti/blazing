@@ -1,0 +1,1 @@
+export const API_URL = new URL('https://blazing-api.up.railway.app');

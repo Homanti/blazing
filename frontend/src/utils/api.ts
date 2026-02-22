@@ -1,13 +1,14 @@
 import axios, { type AxiosInstance } from 'axios';
 import camelcaseKeys from 'camelcase-keys';
 import {useAuthStore} from "@/stores/authStore.tsx";
+import {API_URL} from "@/configs/api.config.ts";
 
 class ApiClient {
     private api: AxiosInstance;
 
     constructor() {
         this.api = axios.create({
-            baseURL: '',
+            baseURL: API_URL.toString(),
             timeout: 10000,
         });
 

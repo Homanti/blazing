@@ -2,12 +2,12 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import type { WsMessage, SendMessageRequest } from '@/types/websocket';
 import { useAuthStore } from '@/stores/authStore';
 import camelcaseKeys from "camelcase-keys";
+import {API_URL} from "@/configs/api.config.ts";
 
 const getWsUrl = (path: string, token?: string): string => {
-    if (typeof window === 'undefined') return '';
-    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const protocol = API_URL.protocol === 'https:' ? 'wss:' : 'ws:';
     const tokenParam = token ? `?token=${token}` : '';
-    return `${protocol}//${location.host}${path}${tokenParam}`;
+    return `${protocol}//${API_URL.host}${path}${tokenParam}`;
 };
 
 export const useWebSocket = (
