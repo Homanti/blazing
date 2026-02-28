@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use sqlx::Type;
+use sqlx::{FromRow, Type};
 use sqlx::types::Json;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, PartialEq)]
@@ -14,7 +14,7 @@ pub enum MessageType {
     UserLeave
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, Serialize, Deserialize, Type, FromRow)]
 pub struct Attachment {
     pub id: Uuid,
     pub filename: String,
@@ -40,6 +40,21 @@ pub struct SendMessageRequest {
     pub content: String,
     pub message_type: Option<MessageType>,
     pub attachments: Option<Json<Vec<Attachment>>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Author {
+    pub id: Uuid,
+    pub username: String,
+    pub avatar_url: Option<String>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SendMessageResponse {
+    pub message: Message,
+    pub author: Author,
 }
 
 #[derive(Serialize, Deserialize)]

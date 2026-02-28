@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::{Message, SendMessageRequest};
+use crate::{SendMessageRequest, SendMessageResponse};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -9,7 +9,7 @@ pub enum WsMessage {
     NewMessage(SendMessageRequest),
 
     #[serde(rename = "message_created")]
-    MessageCreated { message: Message },
+    MessageCreated { message: SendMessageResponse },
 
     #[serde(rename = "typing_start")]
     TypingStart {

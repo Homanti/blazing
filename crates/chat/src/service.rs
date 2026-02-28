@@ -1,5 +1,5 @@
 use sqlx::PgPool;
-use blazing_models::{AppError, Attachment, GetMessagesRequest, Message, MessageType, SendMessageRequest};
+use blazing_models::{AppError, Attachment, Author, GetMessagesRequest, Message, MessageType, SendMessageRequest, SendMessageResponse};
 use sqlx::types::{Json, Uuid};
 use blazing_auth::CurrentUser;
 
@@ -16,35 +16,78 @@ impl MessagesService {
         &self.db_pool
     }
 
-    pub async fn create_message(&self, request: SendMessageRequest, author_id: Uuid) -> Result<Message, AppError> {
+    pub async fn create_message(&self, request: SendMessageRequest, author_id: Uuid) -> Result<SendMessageResponse, AppError> {
         if !self.user_has_channel_access(author_id, request.channel_id).await? {
             return Err(AppError::Forbidden("User is not a member of this guild".to_string()));
         }
 
         let message_type = request.message_type.unwrap_or(MessageType::Default);
 
-        let message = sqlx::query_as!(Message,
-        r#"
-            INSERT INTO messages (channel_id, author_id, content, message_type, attachments)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING
-                id,
-                channel_id,
-                author_id,
-                content,
-                message_type as "message_type: MessageType",
-                attachments as "attachments: Json<Vec<Attachment>>",
-                created_at,
-                updated_at
-        "#, request.channel_id, author_id, request.content,
+        let row = sqlx::query!(
+            r#"
+                WITH inserted AS (
+                    INSERT INTO messages (channel_id, author_id, content, message_type, attachments)
+                    VALUES ($1, $2, $3, $4, $5)
+                    RETURNING
+                        id,
+                        channel_id,
+                        author_id,
+                        content,
+                        message_type,
+                        attachments,
+                        created_at,
+                        updated_at
+                )
+                SELECT
+                    inserted.id           as "m_id!",
+                    inserted.channel_id   as "m_channel_id!",
+                    inserted.author_id    as "m_author_id!",
+                    inserted.content      as "m_content!",
+                    inserted.message_type as "m_message_type?: MessageType",
+                    inserted.attachments  as "m_attachments?: Json<Vec<Attachment>>",
+                    inserted.created_at   as "m_created_at!",
+                    inserted.updated_at   as "m_updated_at!",
+
+                    u.id          as "u_id!",
+                    u.username    as "u_username!",
+                    u.email       as "u_email!",
+                    u.password_hash as "u_password_hash!",
+                    u.avatar_url  as "u_avatar_url?",
+                    u.created_at  as "u_created_at!",
+                    u.updated_at  as "u_updated_at!"
+                FROM inserted
+                JOIN users u ON u.id = inserted.author_id
+            "#,
+            request.channel_id,
+            author_id,
+            request.content,
             message_type as MessageType,
             request.attachments.filter(|json| !json.is_empty()) as Option<Json<Vec<Attachment>>>
-    )
+        )
             .fetch_one(&self.db_pool)
             .await
-            .map_err(|e| AppError::Database(format!("Database error: {}", e)))?;
+            .map_err(|e| AppError::Database(format!("db error: {}", e)))?;
 
-        Ok(message)
+        let message = Message {
+            id: row.m_id,
+            channel_id: row.m_channel_id,
+            author_id: row.m_author_id,
+            content: row.m_content,
+            message_type: row.m_message_type,
+            attachments: row.m_attachments,
+            created_at: row.m_created_at,
+            updated_at: row.m_updated_at,
+        };
+
+        let author = Author {
+            id: row.u_id,
+            username: row.u_username,
+            avatar_url: row.u_avatar_url,
+            created_at: row.u_created_at,
+            updated_at: row.u_updated_at,
+        };
+
+        Ok(SendMessageResponse { message, author })
     }
 
     pub async fn get_messages(&self, request: GetMessagesRequest, current_user: CurrentUser) -> Result<Vec<Message>, AppError> {
