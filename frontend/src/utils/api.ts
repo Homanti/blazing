@@ -1,7 +1,8 @@
 import axios, { type AxiosInstance } from 'axios';
 import camelcaseKeys from 'camelcase-keys';
-import {useAuthStore} from "@/stores/authStore.tsx";
-import {API_URL} from "@/configs/api.config.ts";
+import snakecaseKeys from 'snakecase-keys';
+import { useAuthStore } from "@/stores/authStore.ts";
+import { API_URL } from "@/configs/api.config.ts";
 
 class ApiClient {
     private api: AxiosInstance;
@@ -15,6 +16,15 @@ class ApiClient {
         this.api.interceptors.request.use((config) => {
             const token = useAuthStore.getState().currentAccount?.token;
             if (token) config.headers.Authorization = `Bearer ${token}`;
+
+            if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
+                config.data = snakecaseKeys(config.data, { deep: true });
+            }
+
+            if (config.params && typeof config.params === 'object') {
+                config.params = snakecaseKeys(config.params, { deep: true });
+            }
+
             return config;
         });
 

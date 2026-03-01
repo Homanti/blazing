@@ -1,17 +1,19 @@
 import {useEffect, useState, useCallback, useRef} from "react";
-import { type Message } from "@/types/message";
+import {type MessageWithAuthor} from "@/types/message";
 import { useLocation } from "react-router-dom";
 import styles from "./Dm.module.scss";
 import apiClient from "@/utils/api";
-import { useWebSocket } from "@/hooks/useWebSocket.ts";
-import type { WsMessage } from "@/types/websocket.tsx";
 import Textarea from "@/components/Textarea/Textarea.tsx";
 import IconButton from "@/components/IconButton/IconButton.tsx";
 import {Send} from "lucide-react";
 import MessageItem from "@/pages/MessengerApp/Dm/MessageItem/MessageItem.tsx";
+import {useWsStore} from "@/stores/wsStore.ts";
+import {flushSync} from "react-dom";
+
+const WS_PATH = '/chat/ws';
 
 function Dm() {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<MessageWithAuthor[]>([]);
     const location = useLocation();
     const channelId = location.pathname.split("/")[3];
 
@@ -20,34 +22,47 @@ function Dm() {
 
     const [input, setInput] = useState('');
 
-    const handleMessage = useCallback((data: WsMessage) => {
-        switch (data.type) {
-            case 'message_created':
-                setMessages((prev) => [...prev, data.message]);
-                break;
-        }
-    }, []);
+    const send = useWsStore(state => state.send);
 
-    const { sendMessage, isConnected } = useWebSocket(
-        `/api/v1/chat/ws`,
-        handleMessage
-    );
+    const isConnected = useWsStore(state => state.isConnected('/chat/ws'));
+
+    useEffect(() => {
+        return useWsStore.getState().subscribe(WS_PATH, (msg) => {
+            switch (msg.type) {
+                case 'message_created':
+                    if (msg.message.message.channelId === channelId) {
+                        setMessages((prev) => {
+                            const exists = prev.some(m => m.message.id === msg.message.message.id);
+                            if (exists) return prev;
+                            return [...prev, msg.message];
+                        });
+                    }
+                    break;
+            }
+        });
+    }, [channelId]);
 
     const sendMessageHandler = useCallback(() => {
-        sendMessage({
+        send(WS_PATH, {
             content: input,
             channelId: channelId
-        })
+        });
+        setInput('');
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [input, sendMessage, channelId]);
+    }, [input, send, channelId]);
 
     useEffect(() => {
         if (!isConnected || !channelId) return;
 
         apiClient.get("/api/v1/chat/history", {
-            params: { channel_id: channelId },
+            params: { channelId },
         })
-            .then(res => setMessages((res.data || []).reverse()))
+            .then(res => {
+                flushSync(() => {
+                    setMessages((res.data || []).reverse());
+                });
+                bottomRef.current?.scrollIntoView({ behavior: 'instant' });
+            })
             .catch(err => {
                 console.error("Failed to fetch messages:", err);
                 setMessages([]);
@@ -60,7 +75,7 @@ function Dm() {
         if (!messagesElement) return;
 
         const isAtBottom =
-            messagesElement.scrollHeight - messagesElement.scrollTop - messagesElement.clientHeight < 100;
+            messagesElement.scrollHeight - messagesElement.scrollTop - messagesElement.clientHeight < 200;
         if (isAtBottom) {
             bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
@@ -71,14 +86,19 @@ function Dm() {
             <section className={styles.chat}>
                 <div className={styles.messages} ref={messagesRef}>
                     {messages.map((message) => (
-                        <MessageItem key={message.id} message={message} />
+                        <MessageItem key={message.message.id} message={message} />
                     ))}
 
                     <div ref={bottomRef} />
                 </div>
 
                 <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
-                    <Textarea className={styles.textarea} value={input} onChange={(e) => setInput(e.target.value)} />
+                    <Textarea onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessageHandler();
+                        }
+                    }} className={styles.textarea} value={input} onChange={(e) => setInput(e.target.value)} />
                     <IconButton variant={"outlined"} onClick={sendMessageHandler}>
                         <Send />
                     </IconButton>

@@ -1,0 +1,98 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                WITH inserted AS (\n                    INSERT INTO messages (channel_id, author_id, content, message_type, attachments)\n                    VALUES ($1, $2, $3, $4, $5)\n                    RETURNING\n                        id,\n                        channel_id,\n                        author_id,\n                        content,\n                        message_type,\n                        attachments,\n                        created_at,\n                        updated_at\n                )\n                SELECT\n                    inserted.id           as \"m_id!\",\n                    inserted.channel_id   as \"m_channel_id!\",\n                    inserted.author_id    as \"m_author_id!\",\n                    inserted.content      as \"m_content!\",\n                    inserted.message_type as \"m_message_type?: MessageType\",\n                    inserted.attachments  as \"m_attachments?: Json<Vec<Attachment>>\",\n                    inserted.created_at   as \"m_created_at!\",\n                    inserted.updated_at   as \"m_updated_at!\",\n\n                    u.id          as \"u_id!\",\n                    u.username    as \"u_username!\",\n                    u.avatar_url  as \"u_avatar_url?\",\n                    u.created_at  as \"u_created_at!\",\n                    u.updated_at  as \"u_updated_at!\"\n                FROM inserted\n                JOIN users u ON u.id = inserted.author_id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "m_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "m_channel_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "m_author_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "m_content!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "m_message_type?: MessageType",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "m_attachments?: Json<Vec<Attachment>>",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 6,
+        "name": "m_created_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "m_updated_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "u_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "u_username!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 10,
+        "name": "u_avatar_url?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "u_created_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "u_updated_at!",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Text",
+        "Varchar",
+        "Jsonb"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "c425146d65aef9b69b9a7027aa6cdca8b494e691ff5e9b0fb6494a88ee17a226"
+}

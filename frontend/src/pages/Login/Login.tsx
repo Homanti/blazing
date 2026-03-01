@@ -4,7 +4,7 @@ import styles from "./Login.module.scss";
 import {useTranslation} from "react-i18next";
 import {useState} from "react";
 import { type SubmitEvent } from 'react';
-import {useAuthStore} from "@/stores/authStore.tsx";
+import {useAuthStore} from "@/stores/authStore.ts";
 import {useNavigate} from "react-router-dom";
 import PAGES from "@/configs/pages.config.ts";
 

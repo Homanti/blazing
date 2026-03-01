@@ -91,10 +91,17 @@ impl MessageHandler for ChatMessageHandler {
             r#"
                 SELECT DISTINCT c.id
                 FROM channels c
-                INNER JOIN guild_members gm ON c.guild_id = gm.guild_id
-                WHERE gm.user_id = $1
-            "#,
-            user_id
+                WHERE
+                    (c.guild_id IS NOT NULL AND EXISTS (
+                        SELECT 1 FROM guild_members gm
+                        WHERE gm.guild_id = c.guild_id AND gm.user_id = $1
+                    ))
+                    OR
+                    (c.guild_id IS NULL AND EXISTS (
+                        SELECT 1 FROM channel_recipients cr
+                        WHERE cr.channel_id = c.id AND cr.user_id = $1
+                    ))
+            "#, user_id
         )
             .fetch_all(self.messages_service.get_pool())
             .await

@@ -1,4 +1,4 @@
-import type {Message} from "@/types/message.tsx";
+import type {MessageWithAuthor} from "@/types/message.tsx";
 
 export interface SendMessageRequest {
     channelId: string;
@@ -14,7 +14,7 @@ export type WsMessage =
 }
     | {
     type: 'message_created';
-    message: Message;
+    message: MessageWithAuthor;
 }
     | {
     type: 'typing_start';

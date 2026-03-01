@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                SELECT\n                    m.id           as \"m_id!\",\n                    m.channel_id   as \"m_channel_id!\",\n                    m.author_id    as \"m_author_id!\",\n                    m.content      as \"m_content!\",\n                    m.message_type as \"m_message_type?: MessageType\",\n                    m.attachments  as \"m_attachments?: Json<Vec<Attachment>>\",\n                    m.created_at   as \"m_created_at!\",\n                    m.updated_at   as \"m_updated_at!\",\n\n                    u.id         as \"u_id!\",\n                    u.username   as \"u_username!\",\n                    u.avatar_url as \"u_avatar_url?\",\n                    u.created_at as \"u_created_at!\",\n                    u.updated_at as \"u_updated_at!\"\n                FROM messages m\n                JOIN users u ON u.id = m.author_id\n                WHERE m.channel_id = $1\n                ORDER BY m.created_at DESC\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "m_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "m_channel_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "m_author_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "m_content!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "m_message_type?: MessageType",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "m_attachments?: Json<Vec<Attachment>>",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 6,
+        "name": "m_created_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "m_updated_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "u_id!",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 9,
+        "name": "u_username!",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 10,
+        "name": "u_avatar_url?",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "u_created_at!",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "u_updated_at!",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "3ce52eee57ec27e8dc2795c22e592a05595d1a2150334b41bd8cba61874fb7a9"
+}

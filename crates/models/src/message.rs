@@ -52,7 +52,7 @@ pub struct Author {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SendMessageResponse {
+pub struct MessageWithAuthor {
     pub message: Message,
     pub author: Author,
 }

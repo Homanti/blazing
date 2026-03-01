@@ -1,21 +1,21 @@
-import type {Message} from "@/types/message.tsx";
+import type {MessageWithAuthor} from "@/types/message.tsx";
 import styles from "./MessageItem.module.scss";
 import Avatar from "@/components/Avatar/Avatar.tsx";
 
 type MessageItemProps = {
-    message: Message;
+    message: MessageWithAuthor;
 };
 
 function MessageItem({message}: MessageItemProps) {
     return (
         <div className={styles.message}>
             <span className={styles.avatarWrapper}>
-                <Avatar username={message.authorId} />
+                <Avatar avatarUrl={message.author.avatarUrl} username={message.author.username} />
             </span>
 
-            <span className={styles.contentWrapper} key={message.id}>
-                <p>{message.authorId}</p>
-                <p>{message.content}</p>
+            <span className={styles.contentWrapper}>
+                <p>{message.author.username}</p>
+                <p>{message.message.content}</p>
             </span>
         </div>
     );

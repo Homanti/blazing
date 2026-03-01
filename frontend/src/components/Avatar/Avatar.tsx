@@ -31,7 +31,7 @@ function Avatar({ avatarUrl, username }: AvatarProps) {
             style={!avatarUrl ? { backgroundColor: bg } : undefined}
         >
             {avatarUrl ? (
-                <img src={avatarUrl} alt={username} />
+                <img draggable={false} src={avatarUrl} alt={username} />
             ) : (
                 <span>{initials}</span>
             )}

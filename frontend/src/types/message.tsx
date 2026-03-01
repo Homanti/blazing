@@ -3,4 +3,20 @@ export type Message = {
     authorId: string;
     content: string;
     attachments?: string[];
+    channelId: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type Author = {
+    id: string;
+    username: string;
+    avatarUrl: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type MessageWithAuthor = {
+    message: Message;
+    author: Author;
 };

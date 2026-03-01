@@ -1,10 +1,10 @@
 import styles from './ChatsSidebar.module.scss';
 import ChatItem from "@/layouts/ChatLayout/components/ChatsSidebar/ChatItem/ChatItem.tsx";
-import {useAuthStore} from "@/stores/authStore.tsx";
+import {useAuthStore} from "@/stores/authStore.ts";
 import UserProfilePanel from "@/components/UserProfilePanel/UserProfilePanel.tsx";
 
 const users = [
-    {username: "88649c79-b0bd-488d-8217-326a7e662364", channelId: "88649c79-b0bd-488d-8217-326a7e662364"},
+    {username: "6e4cec20-7943-4186-a47b-145344e970f4", channelId: "6e4cec20-7943-4186-a47b-145344e970f4"},
 ]
 
 function ChatsSidebar() {
@@ -16,7 +16,7 @@ function ChatsSidebar() {
         <div className={styles.sidebar}>
             <div className={styles.chats}>
                 {users.map((user) => (
-                    <ChatItem username={user.username} channelId={user.channelId} />
+                    <ChatItem key={user.channelId} username={user.username} channelId={user.channelId} />
                 ))}
             </div>
 
